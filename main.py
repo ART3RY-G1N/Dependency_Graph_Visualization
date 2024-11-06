@@ -56,7 +56,6 @@ def main(config_file):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Использование: python main.py <config_file>")
         sys.exit(1)
 
     main(sys.argv[1])
