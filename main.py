@@ -63,7 +63,10 @@ def main(config_file):
 
 if __name__ == "__main__":  # Corrected the condition
     if len(sys.argv) < 2:
+<<<<<<< HEAD
         print("Usage: python main.py <config_file>")
+=======
+>>>>>>> 0ae14d8bca396f006e5acf12717317b488899050
         sys.exit(1)
 
     main(sys.argv[1])
