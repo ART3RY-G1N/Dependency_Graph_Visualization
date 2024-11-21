@@ -12,35 +12,34 @@ def get_package_dependencies(package_name):
         if response.status_code == 200:
             data = response.json()
             dependencies = data.get('info', {}).get('requires_dist', [])
-            return dependencies if dependencies is not None else []  # Return empty list if None
+            return dependencies if dependencies is not None else []
         else:
-            return []  # Return empty list on non-200 response
+            return []
     except requests.RequestException as e:
-        return []  # Return empty list on error
+        return []
 
 
 def print_dependencies(package_name, dependencies, max_depth, depth=0, output_file=None):
     if depth == max_depth:
         return
 
-    indent = "  " * depth  # Create indentation string
+    indent = "  " * depth
     if output_file:
         with open(output_file, "a") as f:
-            f.write(f"{indent}- {package_name}\n")  # Write package name with indentation to the file
-    print(f"{indent}- {package_name}")  # Print package name to the console
+            f.write(f"{indent}- {package_name}\n")
+    print(f"{indent}- {package_name}")
 
-    if not dependencies:  # Exit if dependencies are empty
+    if not dependencies:
         return
 
     for dependency in dependencies:
         dep_name = extract_package_name(dependency)
-        print_dependencies(dep_name, get_package_dependencies(dep_name), max_depth, depth + 1, output_file)  # Recursively print dependencies
+        print_dependencies(dep_name, get_package_dependencies(dep_name), max_depth, depth + 1, output_file)
 
 
 def extract_package_name(dep_string):
-    # Remove any internal dependencies in square brackets
     dep_string = re.sub(r'\[.*?\]', '', dep_string)
-    return re.split('[ ;<>=]', dep_string)[0].strip()  # Strip whitespace
+    return re.split('[ ;<>=]', dep_string)[0].strip()
 
 
 def main(config_file):
@@ -48,20 +47,18 @@ def main(config_file):
     config.read(config_file)
 
     package_name = config.get('settings', 'package_name')
-    max_depth = config.getint('settings', 'max_depth')  # Get max_depth as an integer
+    max_depth = config.getint('settings', 'max_depth')
     output_file = config.get('settings', 'output_file')
     print(f"Dependencies for package '{package_name}':")
 
-    # Clear the output file before writing
     if os.path.exists(output_file):
         os.remove(output_file)
 
-    # Get dependencies for the main package
     dependencies = get_package_dependencies(package_name)
-    print_dependencies(package_name, dependencies, max_depth, output_file=output_file)  # Print dependencies
+    print_dependencies(package_name, dependencies, max_depth, output_file=output_file)
 
 
-if __name__ == "__main__":  # Corrected the condition
+if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python main.py <config_file>")
         sys.exit(1)
